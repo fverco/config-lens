@@ -39,7 +39,8 @@ class ConfigLensWindow(
 
     private val excludedDirectoryListModel: DefaultListModel<String> = DefaultListModel()
 
-    private val excludedDirectoriesService: ExcludedDirectoriesService = project.getService(ExcludedDirectoriesService::class.java)
+    private val excludedDirectoriesService: ExcludedDirectoriesService =
+        project.getService(ExcludedDirectoriesService::class.java)
 
     init {
         val tabs = TabbedPaneWrapper(disposable)
@@ -71,10 +72,12 @@ class ConfigLensWindow(
                         false,
                         false
                     )
-                    val projectRoot = project.guessProjectDir() ?: return@setAddAction // todo: Might need to handle this case better
+                    val projectRoot =
+                        project.guessProjectDir() ?: return@setAddAction // todo: Might need to handle this case better
                     val selectedDir = FileChooser.chooseFile(descriptor, project, projectRoot)
                     if (selectedDir != null && VfsUtilCore.isAncestor(projectRoot, selectedDir, false)) {
-                        val relativePath = VfsUtilCore.getRelativePath(selectedDir, projectRoot, '/') ?: return@setAddAction // todo: Need to handle this case better
+                        val relativePath = VfsUtilCore.getRelativePath(selectedDir, projectRoot, '/')
+                            ?: return@setAddAction // todo: Need to handle this case better
                         val added = excludedDirectoriesService.add(relativePath)
                         if (added) {
                             excludedDirectoryListModel.addElement(relativePath)
@@ -117,10 +120,13 @@ class ConfigLensWindow(
     }
 
     private fun scanConfigFiles() {
+        val excludedDirectoriesService = project.getService(ExcludedDirectoriesService::class.java)
+        val searchScope = excludedDirectoriesService.getSearchScope()
+
         ReadAction
             .nonBlocking<List<ConfigFile>> {
                 ConfigFileScannerRegistry.scanners
-                    .flatMap { it.scan(project) }
+                    .flatMap { it.scan(project, searchScope) }
                     .sortedBy { it.projectRelativePath }
             }
             .inSmartMode(project)

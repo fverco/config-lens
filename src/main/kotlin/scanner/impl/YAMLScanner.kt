@@ -13,13 +13,11 @@ import org.jetbrains.yaml.psi.YAMLFile
 
 internal object YAMLScanner : ConfigFileScanner {
 
-    // todo: This implementation is not optimal, as it will load all YAML files in the project, even if they are not configuration files. We should implement a more efficient way to find only the relevant configuration files.
-    override fun scan(project: Project): List<ConfigFile> {
+    override fun scan(project: Project, searchScope: GlobalSearchScope): List<ConfigFile> {
         val psiManager = PsiManager.getInstance(project)
-
         return FileTypeIndex.getFiles(
             YAMLFileType.YML,
-            GlobalSearchScope.projectScope(project)
+            searchScope
         ).mapNotNull { file ->
             val yamlFile = psiManager.findFile(file) as? YAMLFile ?: return@mapNotNull null
             ConfigUtils.toConfigFile(yamlFile, project, ConfigFileType.YAML)

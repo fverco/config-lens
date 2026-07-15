@@ -14,12 +14,11 @@ import com.intellij.psi.search.GlobalSearchScope
 
 internal object PropertiesScanner : ConfigFileScanner {
 
-    override fun scan(project: Project): List<ConfigFile> {
+    override fun scan(project: Project, searchScope: GlobalSearchScope): List<ConfigFile> {
         val psiManager = PsiManager.getInstance(project)
-
         return FileTypeIndex.getFiles(
             PropertiesFileType.INSTANCE,
-            GlobalSearchScope.projectScope(project)
+            searchScope
         ).mapNotNull { file ->
             val propertiesFile = psiManager.findFile(file) as? PropertiesFile ?: return@mapNotNull null
             ConfigUtils.toConfigFile(propertiesFile as PsiFile, project, ConfigFileType.PROPERTIES)
