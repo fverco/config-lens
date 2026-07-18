@@ -1,4 +1,4 @@
-package com.fverco.plugin.scanner
+package com.fverco.config_lens.scanner
 
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project

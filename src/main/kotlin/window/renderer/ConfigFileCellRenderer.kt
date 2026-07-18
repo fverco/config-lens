@@ -1,6 +1,6 @@
-package com.fverco.plugin.window.renderer
+package com.fverco.config_lens.window.renderer
 
-import com.fverco.plugin.domain.ConfigFile
+import com.fverco.config_lens.domain.ConfigFile
 import java.awt.Component
 import javax.swing.DefaultListCellRenderer
 import javax.swing.JLabel

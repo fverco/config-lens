@@ -1,4 +1,4 @@
-package com.fverco.plugin.settings
+package com.fverco.config_lens.settings
 
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service

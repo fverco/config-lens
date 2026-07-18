@@ -1,4 +1,4 @@
-package com.fverco.plugin.utils
+package com.fverco.config_lens.utils
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex

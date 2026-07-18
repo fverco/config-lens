@@ -1,6 +1,6 @@
-package com.fverco.plugin.settings
+package com.fverco.config_lens.settings
 
-import com.fverco.plugin.scanner.ExcludedDirectoriesScope
+import com.fverco.config_lens.scanner.ExcludedDirectoriesScope
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil.normalize
@@ -20,18 +20,14 @@ class ExcludedDirectoriesService(
 
     fun add(directory: String): Boolean {
         val normalized = normalize(directory)
-        if (normalized in excludedDirectories()) {
-            return false
-        }
-        return excludedDirectories().add(normalized)
+        return normalized !in excludedDirectories() &&
+                excludedDirectories().add(normalized)
     }
 
     fun remove(directory: String): Boolean {
         val normalized = normalize(directory)
-        if (normalized in excludedDirectories()) {
-            return excludedDirectories().remove(normalized)
-        }
-        return false
+        return normalized in excludedDirectories() &&
+                excludedDirectories().remove(normalized)
     }
 
     fun remove(index: Int): Boolean {

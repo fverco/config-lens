@@ -1,4 +1,4 @@
-package com.fverco.plugin.bundle
+package com.fverco.config_lens.bundle
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.PropertyKey

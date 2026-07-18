@@ -1,9 +1,8 @@
-package com.fverco.plugin.scanner.impl
+package com.fverco.config_lens.scanner.impl
 
-import com.fverco.plugin.domain.ConfigFile
-import com.fverco.plugin.domain.ConfigFileType
-import com.fverco.plugin.scanner.ConfigFileScanner
-import com.fverco.plugin.utils.ConfigUtils
+import com.fverco.config_lens.domain.ConfigFile
+import com.fverco.config_lens.scanner.ConfigFileScanner
+import com.fverco.config_lens.utils.ConfigUtils
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.FileTypeIndex
@@ -20,7 +19,7 @@ internal object YAMLScanner : ConfigFileScanner {
             searchScope
         ).mapNotNull { file ->
             val yamlFile = psiManager.findFile(file) as? YAMLFile ?: return@mapNotNull null
-            ConfigUtils.toConfigFile(yamlFile, project, ConfigFileType.YAML)
+            ConfigUtils.toYAMLConfigFile(yamlFile, project)
         }
     }
 

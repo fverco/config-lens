@@ -1,7 +1,7 @@
-package com.fverco.plugin.scanner
+package com.fverco.config_lens.scanner
 
-import com.fverco.plugin.scanner.impl.PropertiesScanner
-import com.fverco.plugin.scanner.impl.YAMLScanner
+import com.fverco.config_lens.scanner.impl.PropertiesScanner
+import com.fverco.config_lens.scanner.impl.YAMLScanner
 import com.intellij.openapi.diagnostic.Logger
 
 internal object ConfigFileScannerRegistry {

@@ -1,4 +1,4 @@
-package com.fverco.plugin.window
+package com.fverco.config_lens.window
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
