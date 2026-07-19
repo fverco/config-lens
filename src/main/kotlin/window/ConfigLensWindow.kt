@@ -19,6 +19,7 @@ import com.intellij.ui.TabbedPaneWrapper
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBPanel
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.concurrency.AppExecutorUtil
 import java.awt.BorderLayout
@@ -28,7 +29,6 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.ListSelectionModel
-import com.intellij.ui.components.JBScrollPane
 
 class ConfigLensWindow(
     private val project: Project,
@@ -40,6 +40,10 @@ class ConfigLensWindow(
     private val content: JComponent
 
     private val fileListModel: DefaultListModel<ConfigFile> = DefaultListModel()
+
+    private val fileList: JBList<ConfigFile> = JBList(fileListModel)
+
+    private val selectedFileLabel: JLabel = JLabel("Selected File: None")
 
     private val propertyListModel: PropertiesTableModel = PropertiesTableModel()
 
@@ -114,9 +118,10 @@ class ConfigLensWindow(
     }
 
     private fun createRefreshButton(): JButton {
-        return JButton("Scan Project").apply {
+        return JButton("Refresh").apply {
             addActionListener {
                 scanConfigFiles()
+                refreshFileList()
             }
         }
     }
@@ -126,25 +131,39 @@ class ConfigLensWindow(
             true,
             0.35f
         )
-        splitter.firstComponent = createFileList()
-        splitter.secondComponent = JBScrollPane(createPropertyTable())
+        splitter.firstComponent = createFileListComponent()
+        splitter.secondComponent = createPropertyTable()
         return splitter
     }
 
-    private fun createPropertyTable(): JBTable = JBTable(propertyListModel)
+    private fun createPropertyTable(): JComponent {
+        val panel = JPanel(BorderLayout())
+        panel.add(selectedFileLabel, BorderLayout.NORTH)
+        panel.add(JBScrollPane(JBTable(propertyListModel)), BorderLayout.CENTER)
+        return panel
+    }
 
-    private fun createFileList(): JBList<ConfigFile?> {
-        val fileList = JBList(fileListModel)
+    private fun createFileListComponent(): JComponent {
         fileList.cellRenderer = ConfigFileCellRenderer
         fileList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         fileList.addListSelectionListener { event ->
             if (event.valueIsAdjusting) {
                 return@addListSelectionListener
             }
-            val selectedFile = fileList.selectedValue ?: return@addListSelectionListener
-            propertyListModel.setRows(selectedFile.getProperties())
+            refreshFileList()
         }
-        return fileList
+        return JBScrollPane(fileList)
+    }
+
+    private fun refreshFileList() {
+        refreshSelectedFileLabel()
+        val selectedFile = fileList.selectedValue ?: return
+        propertyListModel.setRows(selectedFile.getProperties())
+    }
+
+    private fun refreshSelectedFileLabel() {
+        val selectedFile = fileList.selectedValue?.projectRelativePath ?: "None"
+        selectedFileLabel.text = "Selected File: $selectedFile"
     }
 
     private fun scanConfigFiles() {
