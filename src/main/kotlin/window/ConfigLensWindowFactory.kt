@@ -13,7 +13,7 @@ class ConfigLensWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val disposable: Disposable = Disposer.newDisposable("ConfigLensWindow")
         val configLensWindow = ConfigLensWindow(project, disposable)
-        val content = ContentFactory.getInstance().createContent(configLensWindow.getContent(), null, false)
+        val content = ContentFactory.getInstance().createContent(configLensWindow.content, null, false)
 
         content.setDisposer(disposable)
         toolWindow.contentManager.addContent(content)

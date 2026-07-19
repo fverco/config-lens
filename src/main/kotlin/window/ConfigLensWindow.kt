@@ -41,7 +41,7 @@ class ConfigLensWindow(
 
     private val log = Logger.getInstance(ConfigLensWindow::class.java)
 
-    private val content: JComponent
+    private val _content: JComponent
 
     private val fileListModel: DefaultListModel<ConfigFile> = DefaultListModel()
 
@@ -62,8 +62,10 @@ class ConfigLensWindow(
         tabs.addTab("Files", createFilePanel())
         tabs.addTab("Settings", createSettingsPanel())
 
-        content = tabs.component
+        _content = tabs.component
     }
+
+    val content: JComponent = _content
 
     private fun createSettingsPanel(): JComponent {
         return JPanel(BorderLayout()).apply {
@@ -218,6 +220,5 @@ class ConfigLensWindow(
             .submit(AppExecutorUtil.getAppExecutorService())
     }
 
-    fun getContent(): JComponent = content
 
 }
