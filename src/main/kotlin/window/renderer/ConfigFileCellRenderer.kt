@@ -29,7 +29,7 @@ internal object ConfigFileCellRenderer : DefaultListCellRenderer() {
         // Set the text and icon for the label based on the ConfigFile object
         if (value is ConfigFile) {
             label.text = value.projectRelativePath
-            label.icon = value.virtualFile.fileType.icon
+            label.icon = value.psiFile.fileType.icon
         }
 
         return label

@@ -1,9 +1,12 @@
 package com.fverco.config_lens.domain
 
-data class ConfigProperty (
+import com.intellij.pom.Navigatable
+
+data class ConfigProperty(
     val key: String,
     val currentValue: String,
-    val defaultValue: String?
+    val defaultValue: String?,
+    val navigatable: Navigatable
 ) {
 
     override fun equals(other: Any?): Boolean {

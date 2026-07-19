@@ -28,6 +28,10 @@ class PropertiesTableModel : AbstractTableModel() {
         }
     }
 
+    fun getPropertyAt(row: Int): ConfigProperty? {
+        return rows.elementAtOrNull(row)
+    }
+
     fun setRows(newRows: Set<ConfigProperty>) {
         rows.clear()
         rows.addAll(newRows)

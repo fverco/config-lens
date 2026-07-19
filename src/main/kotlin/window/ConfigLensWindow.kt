@@ -1,6 +1,7 @@
 package com.fverco.config_lens.window
 
 import com.fverco.config_lens.domain.ConfigFile
+import com.fverco.config_lens.domain.ConfigProperty
 import com.fverco.config_lens.model.PropertiesTableModel
 import com.fverco.config_lens.scanner.ConfigFileScannerRegistry
 import com.fverco.config_lens.settings.ExcludedDirectoriesService
@@ -23,12 +24,15 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.concurrency.AppExecutorUtil
 import java.awt.BorderLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.DefaultListModel
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.ListSelectionModel
+import javax.swing.SwingUtilities
 
 class ConfigLensWindow(
     private val project: Project,
@@ -138,8 +142,31 @@ class ConfigLensWindow(
 
     private fun createPropertyTable(): JComponent {
         val panel = JPanel(BorderLayout())
+        val propertiesTable = JBTable(propertyListModel)
+        propertiesTable.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent) {
+                if (e.clickCount == 2 && SwingUtilities.isLeftMouseButton(e)) {
+                    val row = propertiesTable.rowAtPoint(e.point)
+
+                    if (row >= 0) {
+                        val modelRow = propertiesTable.convertRowIndexToModel(row)
+                        val property = propertyListModel.getPropertyAt(modelRow)
+                        if (property == null) {
+                            log.warn("Unable to determine property at row $modelRow")
+                            return
+                        }
+                        openProperty(property)
+                    }
+                }
+            }
+
+            private fun openProperty(property: ConfigProperty) {
+                property.navigatable.navigate(true)
+            }
+        })
+
         panel.add(selectedFileLabel, BorderLayout.NORTH)
-        panel.add(JBScrollPane(JBTable(propertyListModel)), BorderLayout.CENTER)
+        panel.add(JBScrollPane(propertiesTable), BorderLayout.CENTER)
         return panel
     }
 

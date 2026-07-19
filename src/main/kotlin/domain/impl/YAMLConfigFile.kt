@@ -6,7 +6,8 @@ import com.fverco.config_lens.domain.ConfigProperty
 import com.fverco.config_lens.window.ConfigLensWindow
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.pom.Navigatable
+import com.intellij.psi.PsiFile
 import org.jetbrains.yaml.YAMLUtil.getQualifiedKeyInFile
 import org.jetbrains.yaml.psi.YAMLFile
 import org.jetbrains.yaml.psi.YAMLKeyValue
@@ -28,8 +29,8 @@ class YAMLConfigFile(
     override val type: ConfigFileType
         get() = ConfigFileType.YAML
 
-    override val virtualFile: VirtualFile
-        get() = file.virtualFile
+    override val psiFile: PsiFile
+        get() = file
 
     override fun getProperty(key: String): ConfigProperty? {
         val property = getQualifiedKeyInFile(file, key) ?: return null
@@ -67,7 +68,7 @@ class YAMLConfigFile(
                 handleYAMLSequence(yamlValue, prefix, result)
 
             is YAMLScalar ->
-                addYAMLScalar(prefix, yamlValue.textValue, result)
+                addYAMLScalar(prefix, yamlValue.textValue, result, yamlValue)
 
             // Log unknown value type.
             else ->
@@ -76,8 +77,8 @@ class YAMLConfigFile(
     }
 
     /**
-     * Handles a YAMLSequence as part of the properties collecting process.
-     * YAMLSequence: Represents a list, eg.
+     * Handles a YAMLSequence as part of the property collecting process.
+     * YAMLSequence: Represents a list, e.g.
      * ```
      *     servers:
      *         - localhost
@@ -101,15 +102,15 @@ class YAMLConfigFile(
             if (itemValue != null) {
                 collectProperties(itemValue, qualifiedKey, result)
             } else {
-                val configProperty = toConfigProperty(prefix, item.text)
+                val configProperty = toConfigProperty(prefix, item.text, item)
                 result.add(configProperty)
             }
         }
     }
 
     /**
-     * Handles a YAMLMapping as part of the properties collecting process.
-     * YAMLMapping: Represents a part of an entire key, eg.
+     * Handles a YAMLMapping as part of the property collecting process.
+     * YAMLMapping: Represents a part of an entire key, e.g.
      * ```
      *      server:
      *          port: 8080
@@ -150,9 +151,10 @@ class YAMLConfigFile(
     private fun addYAMLScalar(
         qualifiedKey: @NlsSafe String,
         value: String,
-        result: MutableSet<ConfigProperty>
+        result: MutableSet<ConfigProperty>,
+        navigatable: Navigatable
     ) {
-        val configProperty = toConfigProperty(qualifiedKey, value)
+        val configProperty = toConfigProperty(qualifiedKey, value, navigatable)
         result.add(configProperty)
     }
 
@@ -174,17 +176,19 @@ class YAMLConfigFile(
     }
 
     private fun toConfigProperty(property: YAMLKeyValue): ConfigProperty {
-        return toConfigProperty(property.keyText, property.valueText)
+        return toConfigProperty(property.keyText, property.valueText, property)
     }
 
     private fun toConfigProperty(
         key: String,
-        value: String
+        value: String,
+        navigatable: Navigatable
     ): ConfigProperty {
         return ConfigProperty(
             key,
             value,
-            null
+            null,
+            navigatable
         )
     }
 

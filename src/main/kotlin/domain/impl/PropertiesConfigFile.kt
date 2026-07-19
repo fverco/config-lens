@@ -5,7 +5,7 @@ import com.fverco.config_lens.domain.ConfigFileType
 import com.fverco.config_lens.domain.ConfigProperty
 import com.intellij.lang.properties.IProperty
 import com.intellij.lang.properties.psi.PropertiesFile
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
 
 class PropertiesConfigFile(
     val file: PropertiesFile,
@@ -18,8 +18,8 @@ class PropertiesConfigFile(
     override val type: ConfigFileType
         get() = ConfigFileType.PROPERTIES
 
-    override val virtualFile: VirtualFile
-        get() = file.virtualFile
+    override val psiFile: PsiFile
+        get() = file as PsiFile
 
     override fun getProperty(key: String): ConfigProperty? {
         val property = file.findPropertyByKey(key)
@@ -35,7 +35,8 @@ class PropertiesConfigFile(
         return ConfigProperty(
             property.key ?: return null,
             property.value.orEmpty(),
-            null
+            null,
+            property
         )
     }
 
